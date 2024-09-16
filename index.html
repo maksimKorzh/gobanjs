@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goban JS</title>
+</head>
+<body>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+  </style>
+  <div id="goban"></div>
+  <script src="goban.js"></script>
+  <script>
+    const goban = new Goban({
+      'size': 19,
+      'width': 800,
+      'history': true
+    });
+    
+  </script>
+</body>
+</html>
