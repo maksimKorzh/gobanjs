@@ -1,6 +1,3 @@
-# Goban JS
-Simple Go Board to embed into websites
-
 # Simple Goban
 ```html
   <div id="goban"></div>
