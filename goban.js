@@ -85,6 +85,7 @@ const Goban = function(params) {
   }
 
   function userInput(event) { /* Handle user input */
+    if (params.sgf) return;
     let rect = canvas.getBoundingClientRect();
     let mouseX = event.clientX - rect.left;
     let mouseY = event.clientY - rect.top;
