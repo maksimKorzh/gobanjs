@@ -5,7 +5,7 @@ Simple Go Board to embed into websites
 Assuming you have downloaded file **goban.js** and
 hosting it along with an HTML page where you want to
 embed a Go board
-<br>
+<hr>
 ```html
   <!-- SIMPLE GOBAN -->
   <div id="goban"></div>
@@ -19,7 +19,6 @@ embed a Go board
 ```
 <a href="https://maksimkorzh.github.io/gobanjs/simple_goban.html">see example...</a>
 
-<hr>
 ```html
   <!-- SGF GAME VIEWER -->
   <div id="goban"></div>
