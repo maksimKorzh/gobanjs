@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goban JS</title>
+</head>
+<body>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+  </style>
+  <div id="goban"></div>
+  <div style="display: flex;">
+    <button onclick="goban.firstMove()" style="width: 115px; font-size: 30px;"><<<</button>
+    <button onclick="goban.prevFewMoves(5)" style="width: 115px; font-size: 30px;"><<</button>
+    <button onclick="goban.prevMove()" style="width: 115px; font-size: 30px;"><</button>
+    <button onclick="goban.nextMove()" style="width: 115px; font-size: 30px;">></button>
+    <button onclick="goban.nextFewMoves(5)" style="width: 115px; font-size: 30px;">>></button>
+    <button onclick="goban.lastMove()" style="width: 115px; font-size: 30px;">>>></button>
+  </div>
+  <script src="goban.js"></script>
+  <script>
+    const sgf = `
+      (;FF[4]CA[UTF-8]AP[GoGui:1.5.4]
+      KM[6.5]PW[GNU Go]DT[2024-09-16]RE[B+0.5]
+      ;B[qd];W[dd];B[pq];W[dp];B[oc];W[qo];B[op];W[ql];B[qi];W[hc]
+      ;B[cn];W[dn];B[dm];W[en];B[cp];W[cq];B[bp];W[dq];B[cl];W[hq]
+      ;B[kq];W[kc];B[cf];W[ch];B[ef];W[fd];B[fi];W[ce];B[bf];W[rq]
+      ;B[ld];W[fl];B[ek];W[be];B[kd];W[jd];B[jf];W[df];B[dg];W[de]
+      ;B[cg];W[ok];B[oi];W[pe];B[qe];W[mj];B[mh];W[rj];B[ri];W[jq]
+      ;B[ko];W[jr];B[jp];W[bq];B[kr];W[gn];B[pn];W[qn];B[lc];W[ml]
+      ;B[mn];W[kb];B[lb];W[ks];B[ls];W[js];B[mr];W[qk];B[lk];W[li]
+      ;B[lh];W[ki];B[kl];W[kh];B[kg];W[hh];B[gg];W[hj];B[il];W[la]
+      ;B[ma];W[ap];B[bo];W[ka];B[nb];W[je];B[ke];W[qr];B[pr];W[si]
+      ;B[sh];W[sj];B[rh];W[po];B[oo];W[mk];B[om];W[ip];B[io];W[ho]
+      ;B[in];W[ps];B[os];W[qs];B[or];W[lm];B[km];W[ln];B[lo];W[he]
+      ;B[mm];W[ll];B[kn];W[kk];B[jk];W[kj];B[gk];W[nl];B[fk];W[em]
+      ;B[el];W[gl];B[hk];W[af];B[ag];W[ae];B[bh];W[gh];B[fh];W[pm]
+      ;B[on];W[ol];B[ge];W[gd];B[fe];W[ee];B[fg];W[hg];B[ij];W[gj]
+      ;B[jh];W[pj];B[hf];W[if];B[gf];W[ig];B[jg];W[pi];B[ph];W[ni]
+      ;B[nh];W[oj];B[oh];W[hm];B[im];W[mi];B[fj];W[ao];B[an];W[aq]
+      ;B[bm];W[qq];B[qj];W[rk];B[hl];W[hn];B[do];W[eo];B[co];W[pp]
+      ;B[nm];W[jj];B[ii];W[hi];B[ih];W[ie];B[gi];W[ji];B[];W[])
+    `;
+    const goban = new Goban({
+      'size': 19,
+      'width': 800,
+      'sgf': sgf
+    });
+    
+  </script>
+</body>
+</html>

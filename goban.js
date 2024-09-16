@@ -142,6 +142,11 @@ const Goban = function(params) {
     return true;
   }
 
+  function pass() {
+    ko = EMPTY;
+    side = 3 - side;
+  }
+
   function count(sq, color) { /* Count group liberties */
     stone = board[sq];
     if (stone == OFFBOARD) return;
@@ -198,17 +203,27 @@ const Goban = function(params) {
 
   function loadHistoryMove() {
     let move = history[moveCount];
-    console.log(move)
     board = move.board;
     ko = move.ko;
     userMove = move.lastMove;
     drawBoard();
   }
 
+  function firstMove() {
+    moveCount = 0;
+    loadHistoryMove();
+  }
+
   function prevMove() {
-    console.log('moveCount:', moveCount)
     if (moveCount == 0) return;
     moveCount--;
+    loadHistoryMove();
+  }
+
+  function prevFewMoves(few) {
+    if (moveCount == 0) return;
+    if ((moveCount - few) >= 0) moveCount -= few;
+    else firstMove();
     loadHistoryMove();
   }
 
@@ -216,6 +231,33 @@ const Goban = function(params) {
     if (moveCount == history.length-1) return;
     moveCount++;
     loadHistoryMove();
+  }
+
+  function nextFewMoves(few) {
+    if (moveCount == history.length-1) return;
+    if ((moveCount + few) <= history.length-1) moveCount += few;
+    else lastMove();
+    loadHistoryMove();
+  }
+
+  function lastMove() {
+    moveCount = history.length-1
+    loadHistoryMove();
+  }
+
+  function loadSgf() {
+    let sgfLines = sgf.split('\n');
+    moves = sgfLines.slice(3, sgfLines.length).join(';').replace(/\s/g, '');
+    for (let move of moves.split(';')) {
+      if (move.length) {
+        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { pass(); continue; }
+        let player = move[0] == 'B' ? BLACK : WHITE;
+        let col = move.charCodeAt(2)-97;
+        let row = move.charCodeAt(3)-97;
+        let sq = (row+1) * 21 + (col+1);
+        setStone(sq, player, false);
+      }
+    } firstMove();
   }
 
   function init() { /* Init goban module */
@@ -237,13 +279,19 @@ const Goban = function(params) {
       'lastMove': -1,
       'ko': EMPTY
     });
+    moveCount = history.length-1;
+    if (params.sgf) loadSgf(params.sgf);
   }
   
   // PUBLIC API
   return {
     init: init(),
     refresh: function() { return drawBoard(); },
-    prev: function() { return prevMove(); },
-    next: function() { return nextMove(); }
+    firstMove: function() { return firstMove(); },
+    prevFewMoves: function(few) { return prevFewMoves(few); },
+    prevMove: function() { return prevMove(); },
+    nextMove: function() { return nextMove(); },
+    nextFewMoves: function(few) { return nextFewMoves(few); },
+    lastMove: function() { return lastMove(); }
   }
 }
