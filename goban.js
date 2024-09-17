@@ -122,6 +122,9 @@ const Goban = function(params) {
     ko = EMPTY;
     board[sq] = color;
     history.push({
+      'ply': moveCount,
+      'side': color,
+      'move': sq,
       'board': JSON.parse(JSON.stringify(board)),
       'lastMove': sq,
       'ko': ko
@@ -276,6 +279,9 @@ const Goban = function(params) {
     clearBoard();
     drawBoard();
     history.push({
+      'ply': moveCount,
+      'side': WHITE,
+      'move': EMPTY,
       'board': JSON.parse(JSON.stringify(board)),
       'lastMove': -1,
       'ko': EMPTY
@@ -288,6 +294,7 @@ const Goban = function(params) {
   return {
     init: init(),
     refresh: function() { return drawBoard(); },
+    history: function() { return history; },
     firstMove: function() { return firstMove(); },
     prevFewMoves: function(few) { return prevFewMoves(few); },
     prevMove: function() { return prevMove(); },
