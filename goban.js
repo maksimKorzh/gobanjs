@@ -24,12 +24,11 @@ const Goban = function(params) {
 
   var board = [];
   var history = [];
+  var komi = 6.5;
   var size;
   var side = BLACK;
   var liberties = [];
   var block = [];
-  var points_side = [];
-  var points_count = [];
   var ko = EMPTY;
   var bestMove = EMPTY;
   var userMove = 0;
@@ -95,6 +94,7 @@ const Goban = function(params) {
     if (board[sq]) return;
     if (!setStone(sq, side, true)) return;
     drawBoard();
+    setTimeout(function() { try { params.response(); } catch (e) { /* Specify custom response function */ } }, 100)
   }
 
   function clearBoard() { /* Empty board, set offboard squares */
@@ -122,11 +122,10 @@ const Goban = function(params) {
     ko = EMPTY;
     board[sq] = color;
     history.push({
-      'ply': moveCount,
-      'side': color,
+      'ply': moveCount+1,
+      'side': (3-color),
       'move': sq,
-      'board': JSON.parse(JSON.stringify(board)),
-      'lastMove': sq,
+      'board': JSON.stringify(board),
       'ko': ko
     });
     moveCount = history.length-1;
@@ -141,12 +140,32 @@ const Goban = function(params) {
       moveCount--;
       if (user) alert("Suicide move!");
       return false;
-    } side = 3 - side;
+    } 
+    side = 3 - side;
     userMove = sq;
     return true;
   }
 
+  function setHandicap(stones) {
+    if (stones < 0 || stones > 9) return;
+    let handicap = stones;
+    let handicapStones = [88, 100, 340, 352, 214, 226, 94, 346, 220].slice(0, handicap);
+    for (let sq of handicapStones) {
+      goban.play(sq, goban.BLACK);
+      if (sq != handicapStones[handicap-1]) goban.pass();
+      goban.refresh();
+    }
+  }
+
   function pass() {
+    history.push({
+      'ply': moveCount+1,
+      'side': (3-side),
+      'move': EMPTY,
+      'board': JSON.stringify(board),
+      'ko': ko
+    });
+    moveCount = history.length-1;
     ko = EMPTY;
     side = 3 - side;
   }
@@ -207,10 +226,18 @@ const Goban = function(params) {
 
   function loadHistoryMove() {
     let move = history[moveCount];
-    board = move.board;
+    board = JSON.parse(move.board);
+    side = move.side;
     ko = move.ko;
-    userMove = move.lastMove;
+    userMove = move.move;
     drawBoard();
+  }
+
+  function undoMove() {
+    if (moveCount == 0) return;
+    moveCount--;
+    history.pop();
+    loadHistoryMove();
   }
 
   function firstMove() {
@@ -249,12 +276,11 @@ const Goban = function(params) {
     loadHistoryMove();
   }
 
-  function loadSgf() {
-    let sgfLines = sgf.split('\n');
-    moves = sgfLines.slice(3, sgfLines.length).join(';').replace(/\s/g, '');
-    for (let move of moves.split(';')) {
+  function loadSgf(sgf) {
+    for (let move of sgf.split(';')) {
       if (move.length) {
-        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { pass(); continue; }
+        if (move.charCodeAt(2) < 97 || move.charCodeAt(2) > 115) { continue; }
+        //if (move.charCodeAt(2) == ']') { pass(); continue; }
         let player = move[0] == 'B' ? BLACK : WHITE;
         let col = move.charCodeAt(2)-97;
         let row = move.charCodeAt(3)-97;
@@ -264,11 +290,26 @@ const Goban = function(params) {
     } firstMove();
   }
 
+  function saveSgf() {
+    let sgf = '(;GM[1]FF[4]CA[UTF-8]AP[Kata Model JS]\n';
+    sgf += 'RU[AGA]SZ[19]KM[]TM[600]OT[25/60 Canadian]\n';
+    sgf += 'PW[White]PB[Black]DT[]RE[]\n';
+    for (let item of history.slice(1, history.length)) {
+      let col = item.move % 21;
+      let row = Math.floor(item.move / 21);
+      let color = item.side == BLACK ? 'W' : 'B';
+      let coords = ' abcdefghijklmnopqrs';
+      let move = coords[col] + coords[row];
+      if (move == '  ') sgf += ';' + color + '[]'
+      else sgf += ';' + color + '[' + move + ']';
+    } sgf += ')'
+    return sgf;
+  }
+
   function init() { /* Init goban module */
     let container = document.getElementById('goban');
     canvas = document.createElement('canvas');
     canvas.style="margin-bottom: -3%;";
-    container.style="display: flex; flex-direction: column; align-items: center";
     container.appendChild(canvas);
     canvas.width = params.width;
     canvas.height = params.width;
@@ -279,22 +320,36 @@ const Goban = function(params) {
     clearBoard();
     drawBoard();
     history.push({
-      'ply': moveCount,
-      'side': WHITE,
+      'ply': 0,
+      'side': BLACK,
       'move': EMPTY,
-      'board': JSON.parse(JSON.stringify(board)),
-      'lastMove': -1,
-      'ko': EMPTY
+      'board': JSON.stringify(board),
+      'ko': ko
     });
     moveCount = history.length-1;
-    if (params.sgf) loadSgf(params.sgf);
   }
   
   // PUBLIC API
   return {
     init: init(),
-    refresh: function() { return drawBoard(); },
+    BLACK: BLACK,
+    WHITE: WHITE,
+    importSgf: function(sgf) { return loadSgf(sgf); },
+    exportSgf: function() { return saveSgf(); },
+    position: function() { return board; },
+    setKomi: function(komiVal) { komi = komiVal; },
+    komi: function() { return komi; },
     history: function() { return history; },
+    side: function() { return side; },
+    ko: function() { return ko; },
+    count: function(sq, color) { return count(sq, color); },
+    liberties: function() { return liberties; },
+    restore: function() { return restoreBoard(); },
+    play: function(sq, color, user) { return setStone(sq, color, user); },
+    handicap: function(stones) { return setHandicap(stones); },
+    pass: function() { return pass(); },
+    refresh: function() { return drawBoard(); },
+    undoMove: function() { return undoMove(); },
     firstMove: function() { return firstMove(); },
     prevFewMoves: function(few) { return prevFewMoves(few); },
     prevMove: function() { return prevMove(); },
