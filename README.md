@@ -1,16 +1,16 @@
 # Goban JS
 Simple Go board implementation in pure JavaScript
-mainly to serve as a GUI to query KataGo network
-without the actual engine directly in a web browser
+mainly used to serve as a GUI to query KataGo network
+directly in a web browser
 
 # Example usage
-<a href="https://maksimkorzh.github.io/gobanjs/simple_goban.html">simple goban</a>
-<a href="https://maksimkorzh.github.io/gobanjs/load_sgf.html">SGF viewer</a>
+<a href="https://maksimkorzh.github.io/gobanjs/simple_goban.html">simple goban</a><br>
+<a href="https://maksimkorzh.github.io/gobanjs/load_sgf.html">SGF viewer</a><br>
 <a href="https://maksimkorzh.github.io/kata-model-js/">Play against pure KataGo neural network</a>
 
 # API
 ```js
-// Goban class
+// Board class
 const Goban = function(params) {
   ...
   return {
@@ -47,5 +47,4 @@ const goban = new Goban({
   'size': 19,
   'width': 800,
 });
-
 ```
