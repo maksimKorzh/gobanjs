@@ -45,6 +45,6 @@ const Goban = function(params) {
 // Create board
 const goban = new Goban({
   'size': 19,
-  'width': 800,
+  'offset': 100
 });
 ```
